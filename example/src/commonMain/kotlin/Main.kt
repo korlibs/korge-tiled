@@ -1,14 +1,20 @@
 import com.soywiz.korge.*
 import com.soywiz.korge.scene.*
-import com.soywiz.korge.view.*
-import org.korge.samples.mymodule.*
+import com.soywiz.korim.color.*
 
-suspend fun main() = Korge {
-    sceneContainer().changeTo({ MainMyModuleScene() })
-}
+val DEFAULT_KORGE_BG_COLOR = Colors.DARKCYAN.mix(Colors.BLACK, 0.8)
 
-class MainMyModuleScene : Scene() {
-    override suspend fun SContainer.sceneMain() {
-        text(MyModule.TEXT)
-    }
+suspend fun main() = Korge(
+    bgcolor = DEFAULT_KORGE_BG_COLOR,
+    //bgcolor = Colors.WHITE,
+    clipBorders = false,
+    //scaleMode = ScaleMode.EXACT,
+    //debug = true,
+    debug = false,
+    multithreaded = true,
+    forceRenderEveryFrame = false // Newly added optimization!
+
+) {
+    sceneContainer().changeTo({ MainTiledMapWithScrollScene() })
+    //sceneContainer().changeTo({ MainRpgScene() })
 }
