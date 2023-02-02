@@ -15,6 +15,8 @@ suspend fun main() = Korge(
     forceRenderEveryFrame = false // Newly added optimization!
 
 ) {
-    sceneContainer().changeTo({ MainTiledMapWithScrollScene() })
+    sceneContainer().changeTo({ MainVampireScene() })
+
+    //sceneContainer().changeTo({ MainTiledMapWithScrollScene() })
     //sceneContainer().changeTo({ MainRpgScene() })
 }
