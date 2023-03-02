@@ -1,8 +1,9 @@
 import com.soywiz.korge.*
 import com.soywiz.korge.scene.*
 import com.soywiz.korim.color.*
+import com.soywiz.korma.interpolation.*
 
-val DEFAULT_KORGE_BG_COLOR = Colors.DARKCYAN.mix(Colors.BLACK, 0.8)
+val DEFAULT_KORGE_BG_COLOR = Colors.DARKCYAN.mix(Colors.BLACK, 0.8.toRatio())
 
 suspend fun main() = Korge(
     bgcolor = DEFAULT_KORGE_BG_COLOR,

@@ -176,17 +176,15 @@ fun List<TiledMap.TiledTileset>.toTileSet(): TileSet {
     val tilesets = this
     val maxGid = tilesets.map { it.maxgid }.maxOrNull() ?: 0
     val tiles = IntMap<TileSetTileInfo>(maxGid * 2)
-    val collisions = IntMap<TileShapeInfo>(maxGid * 2)
     tilesets.fastForEach { tileset ->
-        tileset.tileset.texturesMap.fastForEach { key, value ->
+        tileset.tileset.tilesMap.fastForEach { key, value ->
             val id = tileset.firstgid + key
             tiles[id] = value.copy(id = id)
         }
-        tileset.tileset.collisionsMap.fastForEach { key, value ->
-            collisions[tileset.firstgid + key] = value
+        tileset.tileset.tilesMap.fastForEach { key, value ->
         }
     }
-    return TileSet(tiles, collisionsMap = collisions)
+    return TileSet(tiles)
 }
 
 //e: java.lang.UnsupportedOperationException: Class literal annotation arguments are not yet supported: Factory
@@ -231,8 +229,8 @@ class TiledMap constructor(
         var objectShape: Shape = Shape.PPoint,
         val properties: MutableMap<String, Property> = mutableMapOf()
     ) {
-        val x: Double get() = bounds.x
-        val y: Double get() = bounds.y
+        val x: Double get() = bounds.x.toDouble()
+        val y: Double get() = bounds.y.toDouble()
 
         //val transform get() = getTransform()
 
@@ -246,7 +244,7 @@ class TiledMap constructor(
             INDEX("index"), TOP_DOWN("topdown")
         }
 
-        fun getTransform() = Matrix()
+        fun getTransform() = MMatrix()
             .pretranslate(bounds.x, bounds.y)
             .prerotate(rotation.degrees)
 
@@ -269,7 +267,7 @@ class TiledMap constructor(
             }
             data class Ellipse(val width: Double, val height: Double) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
-                    ellipse(0.0, 0.0, width, height)
+                    ellipse(Point(0, 0), Size(width, height))
                 })
 
                 override fun toShape2d() = Shape2d.EllipseOrCircle(0.0, 0.0, width, height)
@@ -278,12 +276,12 @@ class TiledMap constructor(
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                 })
             }
-            data class Polygon(val points: List<Point>) : Shape() {
+            data class Polygon(val points: IPointArrayList) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     polygon(points)
                 })
             }
-            data class Polyline(val points: List<Point>) : Shape() {
+            data class Polyline(val points: IPointArrayList) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     polygon(points)
                 })

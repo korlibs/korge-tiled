@@ -1,37 +1,20 @@
-import com.soywiz.klock.Stopwatch
-import com.soywiz.klock.milliseconds
-import com.soywiz.korev.Key
-import com.soywiz.korge.component.docking.keepChildrenSortedByY
-import com.soywiz.korge.scene.Scene
-import com.soywiz.korge.tiled.TiledMapView
-import com.soywiz.korge.tiled.tiledMapView
-import com.soywiz.korge.view.Container
-import com.soywiz.korge.view.SContainer
-import com.soywiz.korge.view.View
-import com.soywiz.korge.view.addUpdater
-import com.soywiz.korge.view.animation.ImageDataView
-import com.soywiz.korge.view.animation.imageDataView
-import com.soywiz.korge.view.container
-import com.soywiz.korge.view.cpuGraphics
-import com.soywiz.korge.view.moveWithCollisions
-import com.soywiz.korge.view.scale
-import com.soywiz.korge.view.xy
-import com.soywiz.korim.atlas.MutableAtlasUnit
-import com.soywiz.korim.bitmap.Bitmap
-import com.soywiz.korim.bitmap.Bitmap32
-import com.soywiz.korim.color.Colors
-import com.soywiz.korim.format.ASE
-import com.soywiz.korim.format.readBitmapSlice
-import com.soywiz.korim.format.readImageDataContainer
-import com.soywiz.korim.format.toAtlas
-import com.soywiz.korim.format.toProps
-import com.soywiz.korim.tiles.tiled.readTiledMap
-import com.soywiz.korio.file.std.resourcesVfs
-import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.shape.Shape2d
-import com.soywiz.korma.geom.vector.circle
-import com.soywiz.korma.geom.vector.rect
-import com.soywiz.korma.geom.vector.star
+import com.soywiz.kds.iterators.*
+import com.soywiz.klock.*
+import com.soywiz.korev.*
+import com.soywiz.korge.scene.*
+import com.soywiz.korge.tiled.*
+import com.soywiz.korge.view.*
+import com.soywiz.korge.view.animation.*
+import com.soywiz.korim.atlas.*
+import com.soywiz.korim.bitmap.*
+import com.soywiz.korim.color.*
+import com.soywiz.korim.format.*
+import com.soywiz.korim.tiles.tiled.*
+import com.soywiz.korio.file.std.*
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.geom.shape.*
+import com.soywiz.korma.geom.slice.*
+import com.soywiz.korma.geom.vector.*
 
 class MainVampireScene : Scene() {
     override suspend fun SContainer.sceneMain() {
@@ -39,7 +22,7 @@ class MainVampireScene : Scene() {
 
         val sw = Stopwatch().start()
 
-        resourcesVfs["korim.png"].readBitmapSlice().split(32, 32).toAtlas(atlas = atlas)
+        resourcesVfs["korim.png"].readBitmapSlice().splitInRows(32, 32).toAtlas(atlas = atlas)
         val korim = resourcesVfs["korim.png"].readBitmapSlice(atlas = atlas)
         val characters = resourcesVfs["characters.ase"].readImageDataContainer(ASE.toProps(), atlas = atlas)
         val slices = resourcesVfs["slice-example.ase"].readImageDataContainer(ASE.toProps(), atlas = atlas)
@@ -84,7 +67,7 @@ class MainVampireScene : Scene() {
                 rect(300, 0, 100, 100)
             }
             fill(Colors.RED) {
-                circle(400, 400, 50)
+                circle(Point(400, 400), 50f)
             }
             fill(Colors.BLUE) {
                 star(5, 30.0, 100.0, x = 400.0, y = 300.0)
@@ -109,8 +92,21 @@ class MainVampireScene : Scene() {
             //val hitTestable = listOf(tiledMapView, gg).toHitTestable()
             val hitTestable = listOf(gg)
 
-            controlWithKeyboard(character1, hitTestable, up = Key.UP, right = Key.RIGHT, down = Key.DOWN, left = Key.LEFT,)
+            controlWithKeyboard(
+                character1,
+                hitTestable,
+                up = Key.UP,
+                right = Key.RIGHT,
+                down = Key.DOWN,
+                left = Key.LEFT,
+            )
             controlWithKeyboard(character2, hitTestable, up = Key.W, right = Key.D, down = Key.S, left = Key.A)
+        }
+    }
+
+    private fun Container.keepChildrenSortedByY() {
+        addUpdater {
+            children.fastForEach { it.zIndex = y }
         }
     }
 
@@ -130,7 +126,7 @@ class MainVampireScene : Scene() {
             val dy = stage!!.keys.getDeltaAxis(up, down)
             if (dx != 0.0 || dy != 0.0) {
                 val dpos = Point(dx, dy).normalized * speed
-                char.moveWithCollisions(collider, dpos.x, dpos.y)
+                char.moveWithCollisions(collider, dpos.xD, dpos.yD)
             }
             char.animation = when {
                 dx < 0.0 -> "left"
@@ -152,7 +148,7 @@ class MainVampireScene : Scene() {
     fun TiledMapView.collisionToBitmap(): Bitmap {
         val bmp = Bitmap32(this.width.toInt(), this.height.toInt())
         for (y in 0 until bmp.height) for (x in 0 until bmp.width) {
-            bmp[x, y] = if (pixelHitTest(x, y) != null) Colors.WHITE else Colors.TRANSPARENT_BLACK
+            bmp[x, y] = if (pixelHitTest(PointInt(x, y)) != null) Colors.WHITE else Colors.TRANSPARENT
         }
         return bmp
     }

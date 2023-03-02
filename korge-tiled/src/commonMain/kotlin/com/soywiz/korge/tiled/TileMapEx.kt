@@ -1,40 +1,17 @@
 package com.soywiz.korge.tiled
 
 import com.soywiz.kds.*
-import com.soywiz.kds.iterators.fastForEach
-import com.soywiz.kds.iterators.fastForEachWithIndex
-import com.soywiz.klock.milliseconds
-import com.soywiz.kmem.clamp
-import com.soywiz.kmem.extract
-import com.soywiz.kmem.isEven
-import com.soywiz.kmem.isOdd
-import com.soywiz.kmem.nextPowerOfTwo
-import com.soywiz.kmem.umod
-import com.soywiz.korge.internal.KorgeInternal
-import com.soywiz.korge.render.ShrinkableTexturedVertexArray
-import com.soywiz.korge.render.RenderContext
-import com.soywiz.korge.render.TexturedVertexArray
-import com.soywiz.korge.view.Container
-import com.soywiz.korge.view.HitTestDirection
-import com.soywiz.korge.view.View
-import com.soywiz.korge.view.ViewDslMarker
-import com.soywiz.korge.view.addTo
-import com.soywiz.korge.view.addUpdater
-import com.soywiz.korim.bitmap.Bitmap
-import com.soywiz.korim.bitmap.Bitmap32
-import com.soywiz.korim.bitmap.BitmapCoords
-import com.soywiz.korim.bitmap.Bitmaps
-import com.soywiz.korim.bitmap.BmpCoordsWithT
-import com.soywiz.korma.geom.Point
-import com.soywiz.korma.geom.Rectangle
-import com.soywiz.korma.geom.Size
-import com.soywiz.korma.geom.setTo
-import com.soywiz.kmem.extract5
-import com.soywiz.kmem.insert
+import com.soywiz.kds.iterators.*
+import com.soywiz.klock.*
+import com.soywiz.kmem.*
+import com.soywiz.korge.internal.*
+import com.soywiz.korge.render.*
+import com.soywiz.korge.view.*
+import com.soywiz.korim.bitmap.*
 import com.soywiz.korim.tiles.*
-import kotlin.math.min
-import com.soywiz.korma.math.min
-import com.soywiz.korma.math.max
+import com.soywiz.korma.geom.*
+import com.soywiz.korma.math.*
+import kotlin.math.*
 
 inline fun Container.tileMapEx(
     map: IStackedIntArray2,
@@ -151,12 +128,6 @@ abstract class BaseTileMapEx(
     var repeatX = TileMapRepeatEx.NONE
     var repeatY = TileMapRepeatEx.NONE
 
-    private val t0 = Point(0, 0)
-    private val tt0 = Point(0, 0)
-    private val tt1 = Point(0, 0)
-    private val tt2 = Point(0, 0)
-    private val tt3 = Point(0, 0)
-
     protected var contentVersion = 0
     private var cachedContentVersion = 0
 
@@ -216,9 +187,9 @@ abstract class BaseTileMapEx(
         //private const val BL = 3
     }
 
-    private val infosPool = Pool(reset = { it.reset() }) { Info(Bitmaps.transparent.bmpBase, ShrinkableTexturedVertexArray(TexturedVertexArray.EMPTY)) }
-    private var lastVirtualRect = Rectangle(-1, -1, -1, -1)
-    private var currentVirtualRect = Rectangle(-1, -1, -1, -1)
+    private val infosPool = Pool(reset = { it.reset() }) { Info(Bitmaps.transparent.bmp, ShrinkableTexturedVertexArray(TexturedVertexArray.EMPTY)) }
+    private var lastVirtualRect = MRectangle(-1, -1, -1, -1)
+    private var currentVirtualRect = MRectangle(-1, -1, -1, -1)
 
     private val indices = IntArray(4)
     private val tempX = FloatArray(4)
@@ -259,13 +230,12 @@ abstract class BaseTileMapEx(
         }
 
         val colMul = renderColorMul
-        val colAdd = renderColorAdd
 
         // @TODO: Bounds in clipped view
-        val pp0 = globalToLocal(t0.setTo(currentVirtualRect.left, currentVirtualRect.top), tt0)
-        val pp1 = globalToLocal(t0.setTo(currentVirtualRect.right, currentVirtualRect.bottom), tt1)
-        val pp2 = globalToLocal(t0.setTo(currentVirtualRect.right, currentVirtualRect.top), tt2)
-        val pp3 = globalToLocal(t0.setTo(currentVirtualRect.left, currentVirtualRect.bottom), tt3)
+        val pp0 = globalToLocal(Point(currentVirtualRect.left, currentVirtualRect.top))
+        val pp1 = globalToLocal(Point(currentVirtualRect.right, currentVirtualRect.bottom))
+        val pp2 = globalToLocal(Point(currentVirtualRect.right, currentVirtualRect.top))
+        val pp3 = globalToLocal(Point(currentVirtualRect.left, currentVirtualRect.bottom))
         val mapTileWidth = tileSize.width
         val mapTileHeight = tileSize.height / if (staggerAxis == TileMapStaggerAxis.Y) 2.0 else 1.0
         val mx0 = ((pp0.x / mapTileWidth) + 1).toInt()
@@ -429,22 +399,22 @@ abstract class BaseTileMapEx(
                             val p3X = p0X + dVX
                             val p3Y = p0Y + dVY
 
-                            tempX[0] = tex.tl_x
-                            tempX[1] = tex.tr_x
-                            tempX[2] = tex.br_x
-                            tempX[3] = tex.bl_x
+                            tempX[0] = tex.tlX
+                            tempX[1] = tex.trX
+                            tempX[2] = tex.brX
+                            tempX[3] = tex.blX
 
-                            tempY[0] = tex.tl_y
-                            tempY[1] = tex.tr_y
-                            tempY[2] = tex.br_y
-                            tempY[3] = tex.bl_y
+                            tempY[0] = tex.tlY
+                            tempY[1] = tex.trY
+                            tempY[2] = tex.brY
+                            tempY[3] = tex.blY
 
                             computeIndices(flipX = flipX, flipY = flipY, rotate = rotate, indices = indices)
 
-                            info.vertices.quadV(p0X, p0Y, tempX[indices[0]], tempY[indices[0]], colMul, colAdd)
-                            info.vertices.quadV(p1X, p1Y, tempX[indices[1]], tempY[indices[1]], colMul, colAdd)
-                            info.vertices.quadV(p2X, p2Y, tempX[indices[2]], tempY[indices[2]], colMul, colAdd)
-                            info.vertices.quadV(p3X, p3Y, tempX[indices[3]], tempY[indices[3]], colMul, colAdd)
+                            info.vertices.quadV(p0X, p0Y, tempX[indices[0]], tempY[indices[0]], colMul)
+                            info.vertices.quadV(p1X, p1Y, tempX[indices[1]], tempY[indices[1]], colMul)
+                            info.vertices.quadV(p2X, p2Y, tempX[indices[2]], tempY[indices[2]], colMul)
+                            info.vertices.quadV(p3X, p3Y, tempX[indices[3]], tempY[indices[3]], colMul)
                         }
 
                         info.vertices.icount += 6
@@ -500,7 +470,6 @@ abstract class BaseTileMapEx(
                         vertices.vertices,
                         ctx.getTex(info.tex),
                         smoothing, renderBlendMode, vertices.vcount, vertices.icount,
-                        premultiplied = info.tex.premultiplied, wrap = false,
                     )
                 }
             }
@@ -519,7 +488,7 @@ open class TileMapEx(
     staggerIndex: TileMapStaggerIndex? = null,
     tileSize: Size = Size(tileset.width.toDouble(), tileset.height.toDouble()),
 ) : BaseTileMapEx(intMap, smoothing, staggerAxis, staggerIndex, tileSize) {
-    override var tilesetTextures: Array<BmpCoordsWithT<Bitmap>?> = emptyArray<BitmapCoords?>()
+    override var tilesetTextures: Array<BitmapCoords?> = emptyArray<BitmapCoords?>()
     var animationIndex: IntArray = IntArray(0)
     var animationElapsed: DoubleArray = DoubleArray(0)
 
@@ -561,7 +530,8 @@ open class TileMapEx(
         tileSize: Size = Size(tileset.width.toDouble(), tileset.height.toDouble()),
     ) : this(map.toIntArray2().toStacked(), tileset, smoothing, orientation, staggerAxis, staggerIndex, tileSize)
 
-    fun pixelHitTest(x: Int, y: Int, direction: HitTestDirection): Boolean {
+    fun pixelHitTest(p: PointInt, direction: HitTestDirection): Boolean {
+        val (x, y) = p
         //if (x < 0 || y < 0) return false // Outside bounds
         if (x < 0 || y < 0) return true // Outside bounds
         val tw = tileset.width
@@ -574,8 +544,8 @@ open class TileMapEx(
         //println(tileset.collisions.toList())
         if (!stackedIntMap.inside(tileX, tileY)) return true
         val tile = stackedIntMap.getLast(tileX, tileY)
-        val collision = tileset.collisions[tile] ?: return false
-        return collision.hitTestAny(x.toDouble(), y.toDouble(), direction)
+        val collision = tileset.tilesMap[tile]?.collision ?: return false
+        return collision.hitTestAny(Point(x.toDouble(), y.toDouble()), direction)
     }
 
     init {
@@ -599,8 +569,8 @@ open class TileMapEx(
         }
     }
 
-    override fun getLocalBoundsInternal(out: Rectangle) {
-        out.setTo(0, 0, tileWidth * stackedIntMap.width, tileHeight * stackedIntMap.height)
+    override fun getLocalBoundsInternal(out: MRectangle) {
+        out.setTo(0.0, 0.0, tileWidth * stackedIntMap.width, tileHeight * stackedIntMap.height)
     }
 
     //override fun hitTest(x: Double, y: Double): View? {
@@ -619,3 +589,7 @@ fun <T : BaseTileMapEx> T.repeat(repeatX: Boolean = false, repeatY: Boolean = fa
     this.repeatY = if (repeatY) TileMapRepeatEx.REPEAT else TileMapRepeatEx.NONE
     return this
 }
+
+@Deprecated("") private operator fun PointInt.component1(): Int = x
+@Deprecated("") private operator fun PointInt.component2(): Int = y
+

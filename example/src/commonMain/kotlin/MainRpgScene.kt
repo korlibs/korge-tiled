@@ -124,7 +124,7 @@ fun Stage.controlWithKeyboard(
 		if (pressingDown) dy = +1.0
 		if (dx != 0.0 || dy != 0.0) {
 			val dpos = Point(dx, dy).normalized * speed
-			char.moveWithHitTestable(collider, dpos.x, dpos.y)
+			char.moveWithHitTestable(collider, dpos.xD, dpos.yD)
 		}
 		char.animation = when {
 			pressingLeft -> "left"

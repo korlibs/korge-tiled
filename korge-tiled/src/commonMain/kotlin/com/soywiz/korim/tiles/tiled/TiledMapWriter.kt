@@ -1,3 +1,5 @@
+@file:OptIn(KormaValueApi::class)
+
 package com.soywiz.korim.tiles.tiled
 
 import com.soywiz.kds.*
@@ -17,7 +19,8 @@ import com.soywiz.korio.serialization.xml.Xml
 import com.soywiz.korio.serialization.xml.XmlBuilder
 import com.soywiz.korio.serialization.xml.buildXml
 import com.soywiz.korio.util.niceStr
-import com.soywiz.korma.geom.Point
+import com.soywiz.korma.annotations.*
+import com.soywiz.korma.geom.*
 
 suspend fun VfsFile.writeTiledMap(map: TiledMap) {
 	writeString(map.toXml().toString())
@@ -163,7 +166,7 @@ private fun WangSet.toXml(): Xml {
 				node(
 					"wangtile",
 					"tileid" to wangtile.tileId,
-					"wangid" to wangtile.wangId.toUInt().toString(16).toUpperCase(),
+					"wangid" to wangtile.wangId.toUInt().toString(16).uppercase(),
 					"hflip" to wangtile.hflip.takeIf { it },
 					"vflip" to wangtile.vflip.takeIf { it },
 					"dflip" to wangtile.dflip.takeIf { it }
@@ -309,10 +312,10 @@ private fun XmlBuilder.objectLayerToXml(layer: Layer.Objects?) {
 				"gid" to obj.gid,
 				"name" to obj.name.takeIf { it.isNotEmpty() },
 				"type" to obj.type.takeIf { it.isNotEmpty() },
-				"x" to obj.bounds.x.takeIf { it != 0.0 },
-				"y" to obj.bounds.y.takeIf { it != 0.0 },
-				"width" to obj.bounds.width.takeIf { it != 0.0 },
-				"height" to obj.bounds.height.takeIf { it != 0.0 },
+				"x" to obj.bounds.x.takeIf { it != 0f },
+				"y" to obj.bounds.y.takeIf { it != 0f },
+				"width" to obj.bounds.width.takeIf { it != 0f },
+				"height" to obj.bounds.height.takeIf { it != 0f },
 				"rotation" to obj.rotation.takeIf { it != 0.0 },
 				"visible" to obj.visible.toInt().takeIf { it != 1 }
 				//TODO: support object template
@@ -320,7 +323,14 @@ private fun XmlBuilder.objectLayerToXml(layer: Layer.Objects?) {
 			) {
 				propertiesToXml(obj.properties)
 
-				fun List<Point>.toXml() = joinToString(" ") { p -> "${p.x.niceStr},${p.y.niceStr}" }
+				fun IPointArrayList.toXml(): String = buildString {
+					fastForEachPoint {
+						if (isNotEmpty()) append(' ')
+						append(it.x.niceStr)
+						append(',')
+						append(it.y.niceStr)
+					}
+				}
 
 				when (val type = obj.objectShape) {
 					is Object.Shape.Rectangle -> Unit

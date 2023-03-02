@@ -1,14 +1,5 @@
 package com.soywiz.korge.view.tiles
 
-import com.soywiz.kds.IntArray2
-import com.soywiz.korag.log.AGLog
-import com.soywiz.korag.log.AGBaseLog
-import com.soywiz.korge.view.scale
-import com.soywiz.korge.view.viewsLog
-import com.soywiz.korim.bitmap.Bitmap32
-import com.soywiz.korim.bitmap.slice
-import kotlin.test.*
-
 /*
 class TileMapJvmTest {
     @Test

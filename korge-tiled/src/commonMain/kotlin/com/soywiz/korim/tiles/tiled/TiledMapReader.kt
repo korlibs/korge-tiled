@@ -124,16 +124,16 @@ suspend fun TileSetData.toTiledSet(
         }
         //println("tile.objectGroup=${tile.objectGroup}")
         collisionsMap[tile.id] = object : TileShapeInfo {
-            override fun hitTestAny(x: Double, y: Double, direction: HitTestDirection): Boolean {
+            override fun hitTestAny(p: Point, direction: HitTestDirection): Boolean {
                 if (vectorPaths.isNotEmpty()) {
                     vectorPaths.fastForEach {
-                        if (it.hitTestAny(x, y, direction)) return true
+                        if (it.hitTestAny(p, direction)) return true
                     }
                 }
                 return collisionType.matches(direction)
             }
 
-            override fun hitTestAny(shape2d: Shape2d, matrix: Matrix, direction: HitTestDirection): Boolean {
+            override fun hitTestAny(shape2d: Shape2d, matrix: MMatrix, direction: HitTestDirection): Boolean {
                 if (vectorPaths.isNotEmpty()) {
                     vectorPaths.fastForEach {
                         if (it.hitTestAny(shape2d, matrix, direction)) return true
@@ -149,18 +149,19 @@ suspend fun TileSetData.toTiledSet(
 
     val ptileset = when {
 	    atlas != null -> {
-            val tileSet = TileSet(bmp.slice(), tileset.tileWidth, tileset.tileHeight, tileset.columns, tileset.tileCount, collisionsMap)
+            val tileSet = TileSet(bmp.slice(), tileset.tileWidth, tileset.tileHeight, tileset.columns, tileset.tileCount)
             val map = IntMap<TileSetTileInfo>()
             tileSet.infos.fastForEachWithIndex { index, value ->
                 if (value != null) {
                     val tile = tileset.tilesById[value.id]
                     map[index] = value.copy(
                         slice = atlas.add(value.slice, Unit).slice,
-                        frames = (tile?.frames ?: emptyList()).map { TileSetAnimationFrame(it.tileId, it.duration.milliseconds) }
+                        frames = (tile?.frames ?: emptyList()).map { TileSetAnimationFrame(it.tileId, it.duration.milliseconds) },
+						collision = collisionsMap[value.id]
                     )
                 }
             }
-            TileSet(map, tileset.tileWidth, tileset.tileHeight, collisionsMap)
+            TileSet(map, tileset.tileWidth, tileset.tileHeight)
 	    }
         //createBorder > 0 -> {
         //    bmp = bmp.toBMP32()
@@ -206,7 +207,8 @@ suspend fun TileSetData.toTiledSet(
         //    }
         //}
         else -> {
-            TileSet(bmp.slice(), tileset.tileWidth, tileset.tileHeight, tileset.columns, tileset.tileCount, collisionsMap)
+            val ts = TileSet(bmp.slice(), tileset.tileWidth, tileset.tileHeight, tileset.columns, tileset.tileCount)
+			TileSet(ts.tilesMap.toMap().map { it.value.copy(collision = collisionsMap[it.value.id]) }, tileset.tileWidth, tileset.tileHeight)
         }
     }
 
@@ -260,7 +262,7 @@ suspend fun VfsFile.readTiledMapData(): TiledMapData {
 		"odd" -> TileMapStaggerIndex.ODD
 		else -> null
 	}
-	tiledMap.backgroundColor = mapXml.getString("backgroundcolor")?.let { colorFromARGB(it, Colors.TRANSPARENT_BLACK) }
+	tiledMap.backgroundColor = mapXml.getString("backgroundcolor")?.let { colorFromARGB(it, Colors.TRANSPARENT) }
 	val nextLayerId = mapXml.getInt("nextlayerid")
 	val nextObjectId = mapXml.getInt("nextobjectid")
 	tiledMap.infinite = mapXml.getInt("infinite") == 1
@@ -549,9 +551,13 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
 			objInstance.properties.putAll(it)
 		}
 
-		fun Xml.readPoints() = str("points").split(spaces).map { xy ->
-			val parts = xy.split(',').map { it.trim().toDoubleOrNull() ?: 0.0 }
-			Point(parts[0], parts[1])
+		fun Xml.readPoints(): IPointArrayList {
+			val out = PointArrayList()
+			str("points").split(spaces).map { xy ->
+				val parts = xy.split(',').map { it.trim().toDoubleOrNull() ?: 0.0 }
+				out.add(Point(parts[0], parts[1]))
+			}
+			return out
 		}
 
 		val ellipse = obj.child("ellipse")
@@ -560,7 +566,7 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
 		val polyline = obj.child("polyline")
 		val text = obj.child("text")
 		val objectShape: Object.Shape = when {
-			ellipse != null -> Object.Shape.Ellipse(objInstance.bounds.width, objInstance.bounds.height)
+			ellipse != null -> Object.Shape.Ellipse(objInstance.bounds.width.toDouble(), objInstance.bounds.height.toDouble())
 			point != null -> Object.Shape.PPoint
 			polygon != null -> Object.Shape.Polygon(polygon.readPoints())
 			polyline != null -> Object.Shape.Polyline(polyline.readPoints())
@@ -579,7 +585,7 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
                     VerticalAlign(text.str("valign", "top")),
                 ),
 			)
-			else -> Object.Shape.Rectangle(objInstance.bounds.width, objInstance.bounds.height)
+			else -> Object.Shape.Rectangle(objInstance.bounds.width.toDouble(), objInstance.bounds.height.toDouble())
 		}
 
 		objInstance.objectShape = objectShape
@@ -670,7 +676,7 @@ private fun Xml.parseProperties(): Map<String, Property> {
 			"int" -> Property.IntT(rawValue.toIntOrNull() ?: 0)
 			"float" -> Property.FloatT(rawValue.toDoubleOrNull() ?: 0.0)
 			"bool" -> Property.BoolT(rawValue == "true")
-			"color" -> Property.ColorT(colorFromARGB(rawValue, Colors.TRANSPARENT_BLACK))
+			"color" -> Property.ColorT(colorFromARGB(rawValue, Colors.TRANSPARENT))
 			"file" -> Property.FileT(if (rawValue.isEmpty()) "." else rawValue)
 			"object" -> Property.ObjectT(rawValue.toIntOrNull() ?: 0)
 			else -> Property.StringT(rawValue)
