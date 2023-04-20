@@ -1,14 +1,14 @@
-package com.soywiz.korge.tiled
+package korlibs.korge.tiled
 
-import com.soywiz.kmem.*
-import com.soywiz.korge.tests.*
-import com.soywiz.korge.view.tiles.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.color.*
-import com.soywiz.korim.tiles.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.async.*
-import com.soywiz.korio.file.std.*
+import korlibs.korge.tests.*
+import korlibs.korge.view.tiles.*
+import korlibs.image.bitmap.*
+import korlibs.image.color.*
+import korlibs.image.tiles.*
+import korlibs.image.tiles.tiled.*
+import korlibs.io.async.*
+import korlibs.io.file.std.*
+import korlibs.memory.extract
 import kotlin.test.*
 
 internal object DefaultViewport {

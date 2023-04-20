@@ -1,16 +1,16 @@
-import com.soywiz.klock.*
-import com.soywiz.korev.*
-import com.soywiz.korge.scene.*
-import com.soywiz.korge.tiled.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.animation.*
-import com.soywiz.korge.view.camera.*
-import com.soywiz.korge.view.filter.*
-import com.soywiz.korim.atlas.*
-import com.soywiz.korim.format.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.file.std.*
-import com.soywiz.korma.geom.*
+import korlibs.time.*
+import korlibs.event.*
+import korlibs.korge.scene.*
+import korlibs.korge.tiled.*
+import korlibs.korge.view.*
+import korlibs.korge.view.animation.*
+import korlibs.korge.view.camera.*
+import korlibs.korge.view.filter.*
+import korlibs.image.atlas.*
+import korlibs.image.format.*
+import korlibs.image.tiles.tiled.*
+import korlibs.io.file.std.*
+import korlibs.math.geom.*
 
 class MainRpgScene : ScaledScene(512, 512) {
     override suspend fun SContainer.sceneMain() {
@@ -48,7 +48,7 @@ class RpgIngameScene : Scene() {
             lateinit var tiledMapView: TiledMapView
 
             val cameraContainer = cameraContainer(
-                256.0, 256.0, clip = true,
+                Size(256.0, 256.0), clip = true,
                 block = {
                     clampToBounds = true
                 }
@@ -62,7 +62,7 @@ class RpgIngameScene : Scene() {
                     println("- obj = $obj")
                 }
                 println("NPCS=$npcs")
-                println(tiledMapView.firstDescendantWith { it.getPropString("type") == "start" })
+                println(tiledMapView.firstDescendantWith { it.getTiledPropString("type") == "start" })
                 val startPos = tiledMapView["start"].firstOrNull?.pos ?: Point(50, 50)
                 val charactersLayer = tiledMapView["characters"].first as Container
 
@@ -91,7 +91,7 @@ class RpgIngameScene : Scene() {
                     }
             }
 
-            cameraContainer.cameraViewportBounds.copyFrom(tiledMapView.getLocalBoundsOptimized())
+            cameraContainer.cameraViewportBounds = tiledMapView.getLocalBounds()
 
             stage!!.controlWithKeyboard(character, tiledMapView)
 

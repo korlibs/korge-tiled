@@ -1,21 +1,21 @@
-import com.soywiz.korge.*
-import com.soywiz.korge.scene.*
-import com.soywiz.korim.color.*
-import com.soywiz.korma.interpolation.*
+import korlibs.korge.*
+import korlibs.korge.scene.*
+import korlibs.image.color.*
+import korlibs.math.interpolation.*
 
 val DEFAULT_KORGE_BG_COLOR = Colors.DARKCYAN.mix(Colors.BLACK, 0.8.toRatio())
 
 suspend fun main() = Korge(
-    bgcolor = DEFAULT_KORGE_BG_COLOR,
+    backgroundColor = DEFAULT_KORGE_BG_COLOR,
+    displayMode = KorgeDisplayMode.DEFAULT.copy(clipBorders = false),
     //bgcolor = Colors.WHITE,
-    clipBorders = false,
+    //clipBorders = false,
     //scaleMode = ScaleMode.EXACT,
     //debug = true,
     debug = false,
     multithreaded = true,
     forceRenderEveryFrame = false // Newly added optimization!
-
-) {
+).start {
     sceneContainer().changeTo({ MainVampireScene() })
 
     //sceneContainer().changeTo({ MainTiledMapWithScrollScene() })

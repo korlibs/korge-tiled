@@ -1,8 +1,8 @@
-package com.soywiz.korge.view.tiles
+package korlibs.korge.view.tiles
 
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.async.*
-import com.soywiz.korio.file.std.*
+import korlibs.image.tiles.tiled.*
+import korlibs.io.async.*
+import korlibs.io.file.std.*
 import kotlin.test.*
 
 class TiledMapTest {

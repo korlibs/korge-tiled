@@ -1,13 +1,16 @@
-package com.soywiz.korge.tiled
+package korlibs.korge.tiled
 
-import com.soywiz.kds.iterators.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.tiles.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.color.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.shape.*
+import korlibs.datastructure.Extra
+import korlibs.datastructure.iterators.*
+import korlibs.datastructure.linkedHashMapOf
+import korlibs.korge.view.*
+import korlibs.korge.view.tiles.*
+import korlibs.image.bitmap.*
+import korlibs.image.color.*
+import korlibs.image.tiles.tiled.TiledMap
+import korlibs.image.tiles.tiled.toTileSet
+import korlibs.math.geom.*
+import korlibs.math.geom.shape.*
 import kotlin.math.*
 
 inline fun Container.tiledMapView(tiledMap: TiledMap, showShapes: Boolean = true, smoothing: Boolean = true, callback: TiledMapView.() -> Unit = {}) =
@@ -22,7 +25,7 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
     }
 
     override val customHitShape get() = true
-    protected override fun hitTestShapeInternal(shape: Shape2d, matrix: MMatrix, direction: HitTestDirection): View? {
+    protected fun hitTestShapeInternal(shape: Shape2D, matrix: MMatrix, direction: HitTestDirection): View? {
         // @TODO: Use shape
         val p = matrix.transform(shape.center)
         return globalPixelHitTest(p, direction)
@@ -77,7 +80,7 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
                                     solidRect(1.0, 1.0, Colors.WHITE)
                                 }
                                 is TiledMap.Object.Shape.Ellipse -> {
-                                    ellipse(bounds.width.toDouble() / 2, bounds.height.toDouble() / 2)
+                                    ellipse(Size(bounds.width.toDouble() / 2, bounds.height.toDouble() / 2))
                                     //solidRect(bounds.width, bounds.width, Colors.RED)
                                 }
                                 is TiledMap.Object.Shape.Rectangle -> {
@@ -95,7 +98,7 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
                                     fill(Colors.WHITE) {
                                         var first = true
                                         var firstPoint: Point? = null
-                                        type.points.fastForEachPoint { point ->
+                                        type.points.fastForEach { point ->
                                             if (first) {
                                                 first = false
                                                 firstPoint = point
@@ -110,7 +113,7 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
                                 is TiledMap.Object.Shape.Polyline -> cpuGraphics {
                                     fill(Colors.WHITE) {
                                         var first = true
-                                        type.points.fastForEachPoint { point ->
+                                        type.points.fastForEach { point ->
                                             if (first) {
                                                 first = false
                                                 moveTo(point)
@@ -130,8 +133,8 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
                                 .name(obj.name.takeIf { it.isNotEmpty() })
                                 .xy(bounds.x, bounds.y)
                                 .rotation(obj.rotation.degrees)
-                                .also { it.addProp("type", obj.type) }
-                                .also { it.addProps(obj.properties) }
+                                .also { it.addTiledProp("type", obj.type) }
+                                .also { it.addTiledProps(obj.properties) }
                         }
                     }
                 }
@@ -142,9 +145,24 @@ class TiledMapView(val tiledMap: TiledMap, showShapes: Boolean = true, smoothing
                 .name(layer.name.takeIf { it.isNotEmpty() })
                 .xy(layer.offsetx, layer.offsety)
                 .alpha(layer.opacity)
-                .also { it.addProps(layer.properties) }
+                .also { it.addTiledProps(layer.properties) }
 		}
 	}
+}
+
+fun View.getTiledPropString(key: String): String? {
+    return tiledProps?.get(key)?.toString()
+}
+fun View.addTiledProp(key: String, value: Any?) {
+    tiledPropsSure[key] = value
+}
+fun View.addTiledProps(map: Map<String, TiledMap.Property>) {
+    tiledPropsSure.putAll(map)
+}
+var View.tiledProps: MutableMap<String, Any?>? by Extra.PropertyThis { null }
+val View.tiledPropsSure: MutableMap<String, Any?> get() {
+    if (tiledProps == null) tiledProps = linkedHashMapOf()
+    return tiledProps!!
 }
 
 fun TiledMap.createView() = TiledMapView(this)

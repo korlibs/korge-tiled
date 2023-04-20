@@ -1,11 +1,11 @@
-package com.soywiz.korge.view.tiles
+package korlibs.korge.view.tiles
 
-import com.soywiz.korge.tiled.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.async.*
-import com.soywiz.korio.file.std.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.collider.*
+import korlibs.korge.tiled.*
+import korlibs.image.tiles.tiled.*
+import korlibs.io.async.*
+import korlibs.io.file.std.*
+import korlibs.math.geom.*
+import korlibs.math.geom.collider.*
 import kotlin.test.*
 
 class TiledMapCollisionTest {

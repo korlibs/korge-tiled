@@ -1,10 +1,10 @@
-package com.soywiz.korge.tiled
+package korlibs.korge.tiled
 
-import com.soywiz.korge.render.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.property.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.file.*
+import korlibs.image.tiles.tiled.readTiledMap
+import korlibs.io.file.VfsFile
+import korlibs.korge.render.*
+import korlibs.korge.view.*
+import korlibs.korge.view.property.*
 
 class TiledMapViewRef() : Container(), ViewLeaf, ViewFileRef by ViewFileRef.Mixin() {
     override suspend fun forceLoadSourceFile(views: Views, currentVfs: VfsFile, sourceFile: String?) {

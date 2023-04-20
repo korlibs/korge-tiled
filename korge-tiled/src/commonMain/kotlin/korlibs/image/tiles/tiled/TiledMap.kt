@@ -1,30 +1,20 @@
-package com.soywiz.korim.tiles.tiled
+package korlibs.image.tiles.tiled
 
-import com.soywiz.kds.*
-import com.soywiz.kds.iterators.fastForEach
-import com.soywiz.klogger.Logger
-import com.soywiz.korim.bitmap.Bitmap32
-import com.soywiz.korim.color.Colors
-import com.soywiz.korim.color.RGBA
-import com.soywiz.korim.text.TextAlignment
-import com.soywiz.korim.tiles.TileMapObjectAlignment
-import com.soywiz.korim.tiles.TileMapOrientation
-import com.soywiz.korim.tiles.TileMapRenderOrder
-import com.soywiz.korim.tiles.TileMapStaggerAxis
-import com.soywiz.korim.tiles.TileMapStaggerIndex
-import com.soywiz.korim.tiles.TileSet
-import com.soywiz.korim.tiles.TileSetTileInfo
-import com.soywiz.korim.tiles.TileShapeInfo
-import com.soywiz.korio.lang.invalidArgument
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.shape.Shape2d
-import com.soywiz.korma.geom.shape.buildVectorPath
-import com.soywiz.korma.geom.shape.toShape2dNew
-import com.soywiz.korma.geom.vector.VectorPath
-import com.soywiz.korma.geom.vector.applyTransform
-import com.soywiz.korma.geom.vector.ellipse
-import com.soywiz.korma.geom.vector.polygon
-import com.soywiz.korma.geom.vector.rect
+import korlibs.datastructure.*
+import korlibs.datastructure.iterators.fastForEach
+import korlibs.image.bitmap.Bitmap32
+import korlibs.image.color.Colors
+import korlibs.image.color.RGBA
+import korlibs.image.text.TextAlignment
+import korlibs.image.tiles.*
+import korlibs.io.lang.invalidArgument
+import korlibs.logger.Logger
+import korlibs.math.geom.*
+import korlibs.math.geom.shape.Shape2D
+import korlibs.math.geom.shape.buildVectorPath
+import korlibs.math.geom.shape.toShape2dNew
+import korlibs.math.geom.vector.VectorPath
+import korlibs.math.geom.vector.applyTransform
 
 class TiledMapData(
     var orientation: TileMapOrientation = TileMapOrientation.ORTHOGONAL,
@@ -249,39 +239,39 @@ class TiledMap constructor(
             .prerotate(rotation.degrees)
 
         fun toVectorPath(): VectorPath = objectShape.toVectorPath().clone().apply {
-            applyTransform(getTransform())
+            applyTransform(getTransform().immutable)
         }
 
-        fun toShape2dNoTransformed(): Shape2d = objectShape.toShape2d()
+        fun toShape2dNoTransformed(): Shape2D = objectShape.toShape2d()
 
         sealed class Shape {
             abstract fun toVectorPath(): VectorPath
-            open fun toShape2d(): Shape2d = toVectorPath().toShape2dNew()
+            open fun toShape2d(): Shape2D = toVectorPath().toShape2dNew()
 
             data class Rectangle(val width: Double, val height: Double) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     rect(0.0, 0.0, width, height)
                 })
 
-                override fun toShape2d(): Shape2d = Shape2d.Rectangle(0.0, 0.0, width, height)
+                override fun toShape2d(): Shape2D = Rectangle(0.0, 0.0, width, height)
             }
             data class Ellipse(val width: Double, val height: Double) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     ellipse(Point(0, 0), Size(width, height))
                 })
 
-                override fun toShape2d() = Shape2d.EllipseOrCircle(0.0, 0.0, width, height)
+                override fun toShape2d() = korlibs.math.geom.Ellipse(Point(width / 2, height / 2), Size(width / 2, height / 2))
             }
             object PPoint : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                 })
             }
-            data class Polygon(val points: IPointArrayList) : Shape() {
+            data class Polygon(val points: PointList) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     polygon(points)
                 })
             }
-            data class Polyline(val points: IPointArrayList) : Shape() {
+            data class Polyline(val points: PointList) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     polygon(points)
                 })

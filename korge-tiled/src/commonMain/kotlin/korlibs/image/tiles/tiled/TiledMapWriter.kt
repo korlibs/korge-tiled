@@ -1,26 +1,24 @@
-@file:OptIn(KormaValueApi::class)
+package korlibs.image.tiles.tiled
 
-package com.soywiz.korim.tiles.tiled
-
-import com.soywiz.kds.*
-import com.soywiz.kmem.toInt
-import com.soywiz.korim.tiles.tiled.TiledMap.Encoding
-import com.soywiz.korim.tiles.tiled.TiledMap.Image
-import com.soywiz.korim.tiles.tiled.TiledMap.Layer
-import com.soywiz.korim.tiles.tiled.TiledMap.Object
-import com.soywiz.korim.tiles.tiled.TiledMap.Property
-import com.soywiz.korim.color.RGBA
-import com.soywiz.korim.text.HorizontalAlign
-import com.soywiz.korim.text.VerticalAlign
-import com.soywiz.korim.tiles.TileMapObjectAlignment
-import com.soywiz.korio.file.VfsFile
-import com.soywiz.korio.lang.format
-import com.soywiz.korio.serialization.xml.Xml
-import com.soywiz.korio.serialization.xml.XmlBuilder
-import com.soywiz.korio.serialization.xml.buildXml
-import com.soywiz.korio.util.niceStr
-import com.soywiz.korma.annotations.*
-import com.soywiz.korma.geom.*
+import korlibs.datastructure.*
+import korlibs.memory.toInt
+import korlibs.image.tiles.tiled.TiledMap.Encoding
+import korlibs.image.tiles.tiled.TiledMap.Image
+import korlibs.image.tiles.tiled.TiledMap.Layer
+import korlibs.image.tiles.tiled.TiledMap.Object
+import korlibs.image.tiles.tiled.TiledMap.Property
+import korlibs.image.color.RGBA
+import korlibs.image.text.HorizontalAlign
+import korlibs.image.text.VerticalAlign
+import korlibs.image.tiles.TileMapObjectAlignment
+import korlibs.io.file.VfsFile
+import korlibs.io.lang.format
+import korlibs.io.serialization.xml.Xml
+import korlibs.io.serialization.xml.XmlBuilder
+import korlibs.io.serialization.xml.buildXml
+import korlibs.io.util.niceStr
+import korlibs.math.annotations.*
+import korlibs.math.geom.*
 
 suspend fun VfsFile.writeTiledMap(map: TiledMap) {
 	writeString(map.toXml().toString())
@@ -323,8 +321,8 @@ private fun XmlBuilder.objectLayerToXml(layer: Layer.Objects?) {
 			) {
 				propertiesToXml(obj.properties)
 
-				fun IPointArrayList.toXml(): String = buildString {
-					fastForEachPoint {
+				fun PointList.toXml(): String = buildString {
+					fastForEach {
 						if (isNotEmpty()) append(' ')
 						append(it.x.niceStr)
 						append(',')

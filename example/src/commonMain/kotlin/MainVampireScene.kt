@@ -1,20 +1,18 @@
-import com.soywiz.kds.iterators.*
-import com.soywiz.klock.*
-import com.soywiz.korev.*
-import com.soywiz.korge.scene.*
-import com.soywiz.korge.tiled.*
-import com.soywiz.korge.view.*
-import com.soywiz.korge.view.animation.*
-import com.soywiz.korim.atlas.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.color.*
-import com.soywiz.korim.format.*
-import com.soywiz.korim.tiles.tiled.*
-import com.soywiz.korio.file.std.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.shape.*
-import com.soywiz.korma.geom.slice.*
-import com.soywiz.korma.geom.vector.*
+import korlibs.datastructure.iterators.*
+import korlibs.event.*
+import korlibs.image.atlas.*
+import korlibs.image.bitmap.*
+import korlibs.image.color.*
+import korlibs.image.format.*
+import korlibs.image.tiles.tiled.*
+import korlibs.io.file.std.*
+import korlibs.korge.scene.*
+import korlibs.korge.tiled.*
+import korlibs.korge.view.*
+import korlibs.korge.view.animation.*
+import korlibs.math.geom.*
+import korlibs.math.geom.slice.*
+import korlibs.time.*
 
 class MainVampireScene : Scene() {
     override suspend fun SContainer.sceneMain() {
@@ -43,7 +41,7 @@ class MainVampireScene : Scene() {
         }
 
         container {
-            scale = 2.0
+            scaleAvg = 2f
             imageDataView(slices["wizHat"]).xy(0, 50)
             imageDataView(slices["giantHilt"]).xy(32, 50)
             imageDataView(slices["pumpkin"]).xy(64, 50)
@@ -81,7 +79,7 @@ class MainVampireScene : Scene() {
             val character1 = imageDataView(characters["vampire"], "down") {
                 stop()
                 xy(200, 200)
-                hitShape2d = Shape2d.Rectangle.fromBounds(-8.0, -3.0, +8.0, +3.0)
+                hitShape2d = Rectangle.fromBounds(-8.0, -3.0, +8.0, +3.0)
             }
 
             val character2 = imageDataView(characters["vamp"], "down") {
@@ -124,9 +122,9 @@ class MainVampireScene : Scene() {
             val speed = 5.0 * (dt / 16.0.milliseconds)
             val dx = stage!!.keys.getDeltaAxis(left, right)
             val dy = stage!!.keys.getDeltaAxis(up, down)
-            if (dx != 0.0 || dy != 0.0) {
+            if (dx != 0f || dy != 0f) {
                 val dpos = Point(dx, dy).normalized * speed
-                char.moveWithCollisions(collider, dpos.xD, dpos.yD)
+                char.moveWithCollisions(collider, dpos.x, dpos.y)
             }
             char.animation = when {
                 dx < 0.0 -> "left"
@@ -135,7 +133,7 @@ class MainVampireScene : Scene() {
                 dy > 0.0 -> "down"
                 else -> char.animation
             }
-            if (dx != 0.0 || dy != 0.0) {
+            if (dx != 0f || dy != 0f) {
                 char.play()
             } else {
                 char.stop()

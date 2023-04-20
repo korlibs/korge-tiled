@@ -1,16 +1,16 @@
-package com.soywiz.korge.tiled
+package korlibs.korge.tiled
 
-import com.soywiz.kds.*
-import com.soywiz.kds.iterators.*
-import com.soywiz.klock.*
-import com.soywiz.kmem.*
-import com.soywiz.korge.internal.*
-import com.soywiz.korge.render.*
-import com.soywiz.korge.view.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.tiles.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.math.*
+import korlibs.datastructure.*
+import korlibs.datastructure.iterators.*
+import korlibs.time.*
+import korlibs.memory.*
+import korlibs.korge.internal.*
+import korlibs.korge.render.*
+import korlibs.korge.view.*
+import korlibs.image.bitmap.*
+import korlibs.image.tiles.*
+import korlibs.math.geom.*
+import korlibs.math.*
 import kotlin.math.*
 
 inline fun Container.tileMapEx(
@@ -569,8 +569,8 @@ open class TileMapEx(
         }
     }
 
-    override fun getLocalBoundsInternal(out: MRectangle) {
-        out.setTo(0.0, 0.0, tileWidth * stackedIntMap.width, tileHeight * stackedIntMap.height)
+    override fun getLocalBoundsInternal(): Rectangle {
+        return Rectangle(0.0, 0.0, tileWidth * stackedIntMap.width, tileHeight * stackedIntMap.height)
     }
 
     //override fun hitTest(x: Double, y: Double): View? {

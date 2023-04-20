@@ -1,38 +1,38 @@
-package com.soywiz.korim.tiles.tiled
+package korlibs.image.tiles.tiled
 
-import com.soywiz.kds.*
-import com.soywiz.kds.iterators.*
-import com.soywiz.klock.*
-import com.soywiz.kmem.*
-import com.soywiz.korim.tiles.tiled.TiledMap.*
-import com.soywiz.korim.tiles.tiled.TiledMap.Image
-import com.soywiz.korim.atlas.*
-import com.soywiz.korim.bitmap.*
-import com.soywiz.korim.color.*
-import com.soywiz.korim.format.*
-import com.soywiz.korim.text.HorizontalAlign
-import com.soywiz.korim.text.TextAlignment
-import com.soywiz.korim.text.VerticalAlign
-import com.soywiz.korim.tiles.TileMapObjectAlignment
-import com.soywiz.korim.tiles.TileMapOrientation
-import com.soywiz.korim.tiles.TileMapRenderOrder
-import com.soywiz.korim.tiles.TileMapStaggerAxis
-import com.soywiz.korim.tiles.TileMapStaggerIndex
-import com.soywiz.korim.tiles.TileSet
-import com.soywiz.korim.tiles.TileSetAnimationFrame
-import com.soywiz.korim.tiles.TileSetTileInfo
-import com.soywiz.korim.tiles.TileShapeInfo
-import com.soywiz.korim.tiles.TileShapeInfoImpl
-import com.soywiz.korio.compression.*
-import com.soywiz.korio.compression.deflate.*
-import com.soywiz.korio.file.*
-import com.soywiz.korio.lang.*
-import com.soywiz.korio.serialization.xml.*
-import com.soywiz.korma.geom.*
-import com.soywiz.korma.geom.collider.HitTestDirection
-import com.soywiz.korma.geom.collider.HitTestDirectionFlags
-import com.soywiz.korma.geom.shape.*
-import com.soywiz.krypto.encoding.*
+import korlibs.datastructure.*
+import korlibs.datastructure.iterators.*
+import korlibs.time.*
+import korlibs.memory.*
+import korlibs.image.tiles.tiled.TiledMap.*
+import korlibs.image.tiles.tiled.TiledMap.Image
+import korlibs.image.atlas.*
+import korlibs.image.bitmap.*
+import korlibs.image.color.*
+import korlibs.image.format.*
+import korlibs.image.text.HorizontalAlign
+import korlibs.image.text.TextAlignment
+import korlibs.image.text.VerticalAlign
+import korlibs.image.tiles.TileMapObjectAlignment
+import korlibs.image.tiles.TileMapOrientation
+import korlibs.image.tiles.TileMapRenderOrder
+import korlibs.image.tiles.TileMapStaggerAxis
+import korlibs.image.tiles.TileMapStaggerIndex
+import korlibs.image.tiles.TileSet
+import korlibs.image.tiles.TileSetAnimationFrame
+import korlibs.image.tiles.TileSetTileInfo
+import korlibs.image.tiles.TileShapeInfo
+import korlibs.image.tiles.TileShapeInfoImpl
+import korlibs.io.compression.*
+import korlibs.io.compression.deflate.*
+import korlibs.io.file.*
+import korlibs.io.lang.*
+import korlibs.io.serialization.xml.*
+import korlibs.math.geom.*
+import korlibs.math.geom.collider.HitTestDirection
+import korlibs.math.geom.collider.HitTestDirectionFlags
+import korlibs.math.geom.shape.*
+import korlibs.crypto.encoding.*
 import kotlin.collections.set
 
 suspend fun VfsFile.readTiledMap(
@@ -116,7 +116,7 @@ suspend fun TileSetData.toTiledSet(
                     TileShapeInfoImpl(
                         HitTestDirectionFlags.fromString(it.type),
                         it.toShape2dNoTransformed(),
-                        it.getTransform(),
+                        it.getTransform().immutable,
                         //it.toVectorPath()
                     )
                 )
@@ -133,7 +133,7 @@ suspend fun TileSetData.toTiledSet(
                 return collisionType.matches(direction)
             }
 
-            override fun hitTestAny(shape2d: Shape2d, matrix: MMatrix, direction: HitTestDirection): Boolean {
+            override fun hitTestAny(shape2d: Shape2D, matrix: Matrix, direction: HitTestDirection): Boolean {
                 if (vectorPaths.isNotEmpty()) {
                     vectorPaths.fastForEach {
                         if (it.hitTestAny(shape2d, matrix, direction)) return true
@@ -551,7 +551,7 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
 			objInstance.properties.putAll(it)
 		}
 
-		fun Xml.readPoints(): IPointArrayList {
+		fun Xml.readPoints(): PointList {
 			val out = PointArrayList()
 			str("points").split(spaces).map { xy ->
 				val parts = xy.split(',').map { it.trim().toDoubleOrNull() ?: 0.0 }

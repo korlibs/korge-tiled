@@ -1,4 +1,4 @@
-package com.soywiz.korge.view.tiles
+package korlibs.korge.view.tiles
 
 /*
 class TileMapJvmTest {
