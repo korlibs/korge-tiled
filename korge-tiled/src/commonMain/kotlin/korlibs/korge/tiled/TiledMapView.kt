@@ -10,6 +10,7 @@ import korlibs.image.color.*
 import korlibs.image.tiles.tiled.TiledMap
 import korlibs.image.tiles.tiled.toTileSet
 import korlibs.math.geom.*
+import korlibs.math.geom.collider.*
 import korlibs.math.geom.shape.*
 import kotlin.math.*
 

@@ -10,7 +10,9 @@ import korlibs.image.atlas.*
 import korlibs.image.format.*
 import korlibs.image.tiles.tiled.*
 import korlibs.io.file.std.*
+import korlibs.korge.view.collision.*
 import korlibs.math.geom.*
+import korlibs.math.geom.collider.*
 
 class MainRpgScene : ScaledScene(512, 512) {
     override suspend fun SContainer.sceneMain() {
@@ -103,12 +105,12 @@ class RpgIngameScene : Scene() {
 }
 
 fun Stage.controlWithKeyboard(
-	char: ImageDataView,
-	collider: HitTestable,
-	up: Key = Key.UP,
-	right: Key = Key.RIGHT,
-	down: Key = Key.DOWN,
-	left: Key = Key.LEFT,
+    char: ImageDataView,
+    collider: HitTestable,
+    up: Key = Key.UP,
+    right: Key = Key.RIGHT,
+    down: Key = Key.DOWN,
+    left: Key = Key.LEFT,
 ) {
 	addUpdater { dt ->
 		val speed = 2.0 * (dt / 16.0.milliseconds)

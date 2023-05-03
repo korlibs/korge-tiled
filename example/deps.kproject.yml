@@ -1,4 +1,4 @@
 #name: deps
 dependencies:
-    - ../korge-tiled
-
+  - ../korge-tiled
+  - git::korge-collision::korlibs/korge-ext::/korge-collision::0.0.1::7c4c3f6c11cd9d5662a49340a3b0c5dd8b0beaf2

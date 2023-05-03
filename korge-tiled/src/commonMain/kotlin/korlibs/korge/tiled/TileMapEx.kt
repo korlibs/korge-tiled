@@ -11,6 +11,7 @@ import korlibs.image.bitmap.*
 import korlibs.image.tiles.*
 import korlibs.math.geom.*
 import korlibs.math.*
+import korlibs.math.geom.collider.*
 import kotlin.math.*
 
 inline fun Container.tileMapEx(
