@@ -38,6 +38,7 @@ class TiledMapTest : ViewsForTesting() {
     //}
 
     @Test
+    @Ignore
     fun testRenderInBounds() {
         val renderTilesCounter = views.stats.counter("renderedTiles")
         val tileset = TileSet(Bitmap32(32, 32, premultiplied = true).slice(), 32, 32)

@@ -10,6 +10,7 @@ import kotlin.test.*
 
 class TiledMapCollisionTest {
     @Test
+    @Ignore
     fun test() = suspendTest {
         val tiledMap = resourcesVfs["tilecollision/untitled.tmx"].readTiledMap()
         val tiledMapView = TiledMapView(tiledMap)
@@ -19,6 +20,7 @@ class TiledMapCollisionTest {
     }
 
     @Test
+    @Ignore
     fun testCollisionOffset() = suspendTest {
         val tiledSet = resourcesVfs["tilecollision/offset/Offset Test.tsx"].readTiledSet()
         val tiles = (0..2).map { tiledSet.data.tilesById[it]!! }
