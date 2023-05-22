@@ -1,4 +1,0 @@
-#name: deps
-dependencies:
-  - ../korge-tiled
-  - https://github.com/korlibs/korge-ext/tree/0.0.1/korge-collision
