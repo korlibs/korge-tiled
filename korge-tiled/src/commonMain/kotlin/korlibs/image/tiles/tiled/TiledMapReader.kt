@@ -587,7 +587,7 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
                     VerticalAlign(text.str("valign", "top")),
                 ),
 			)
-			else -> Object.Shape.Rectangle(objInstance.bounds.width.toDouble(), objInstance.bounds.height.toDouble())
+			else -> Object.Shape.Rectangle(objInstance.bounds)
 		}
 
 		objInstance.objectShape = objectShape

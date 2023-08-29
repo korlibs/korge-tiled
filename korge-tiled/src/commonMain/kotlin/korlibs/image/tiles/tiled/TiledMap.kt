@@ -248,12 +248,12 @@ class TiledMap constructor(
             abstract fun toVectorPath(): VectorPath
             open fun toShape2d(): Shape2D = toVectorPath().toShape2dNew()
 
-            data class Rectangle(val width: Double, val height: Double) : Shape() {
+            data class Rectangle(val rect: korlibs.math.geom.Rectangle) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
-                    rect(0.0, 0.0, width, height)
+                    rect(rect)
                 })
 
-                override fun toShape2d(): Shape2D = Rectangle(0.0, 0.0, width, height)
+                override fun toShape2d(): Shape2D = rect
             }
             data class Ellipse(val width: Double, val height: Double) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
