@@ -32,7 +32,8 @@ import korlibs.math.geom.*
 import korlibs.math.geom.collider.HitTestDirection
 import korlibs.math.geom.collider.HitTestDirectionFlags
 import korlibs.math.geom.shape.*
-import korlibs.crypto.encoding.*
+import korlibs.encoding.*
+import korlibs.math.*
 import kotlin.collections.set
 
 suspend fun VfsFile.readTiledMap(
