@@ -18,8 +18,6 @@ korge {
 
     targetJvm()
     targetJs()
-    targetDesktop()
-    targetDesktopCross()
     targetIos()
     targetAndroid()
 
@@ -29,4 +27,3 @@ korge {
 dependencies {
     add("commonMainApi", project(":deps"))
 }
-
