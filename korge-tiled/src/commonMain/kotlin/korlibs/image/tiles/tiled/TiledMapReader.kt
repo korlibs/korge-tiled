@@ -153,11 +153,11 @@ suspend fun TileSetData.toTiledSet(
             val map = IntMap<TileSetTileInfo>()
             tileSet.infos.fastForEachWithIndex { index, value ->
                 if (value != null) {
-                    val tile = tileset.tilesById[value.id]
+                    val tile = tileset.tilesById[index]
                     map[index] = value.copy(
                         slice = atlas.add(value.slice, Unit).slice,
                         frames = (tile?.frames ?: emptyList()).map { TileSetAnimationFrame(it.tileId, it.duration.milliseconds) },
-						collision = collisionsMap[value.id]
+						collision = collisionsMap[index]
                     )
                 }
             }
@@ -208,7 +208,9 @@ suspend fun TileSetData.toTiledSet(
         //}
         else -> {
             val ts = TileSet(bmp.slice(), tileset.tileWidth, tileset.tileHeight, tileset.columns, tileset.tileCount)
-			TileSet(ts.tilesMap.toMap().map { it.value.copy(collision = collisionsMap[it.value.id]) }, tileset.tileWidth, tileset.tileHeight)
+			TileSet(ts.tilesMap.toMap().entries
+                .mapIndexed { index, it -> it.value.copy(collision = collisionsMap[index]) },
+                tileset.tileWidth, tileset.tileHeight)
         }
     }
 
@@ -585,7 +587,7 @@ private fun Xml.parseObjectLayer(): Layer.Objects {
                     VerticalAlign(text.str("valign", "top")),
                 ),
 			)
-			else -> Object.Shape.Rectangle(objInstance.bounds.width.toDouble(), objInstance.bounds.height.toDouble())
+			else -> Object.Shape.Rectangle(objInstance.bounds)
 		}
 
 		objInstance.objectShape = objectShape
