@@ -42,7 +42,7 @@ class MainVampireScene : Scene() {
         }
 
         container {
-            scaleAvg = 2f
+            scale = 2.0
             imageDataView(slices["wizHat"]).xy(0, 50)
             imageDataView(slices["giantHilt"]).xy(32, 50)
             imageDataView(slices["pumpkin"]).xy(64, 50)
@@ -66,7 +66,7 @@ class MainVampireScene : Scene() {
                 rect(300, 0, 100, 100)
             }
             fill(Colors.RED) {
-                circle(Point(400, 400), 50f)
+                circle(Point(400, 400), 50.0)
             }
             fill(Colors.BLUE) {
                 star(5, 30.0, 100.0, x = 400.0, y = 300.0)
@@ -123,9 +123,9 @@ class MainVampireScene : Scene() {
             val speed = 5.0 * (dt / 16.0.milliseconds)
             val dx = stage!!.keys.getDeltaAxis(left, right)
             val dy = stage!!.keys.getDeltaAxis(up, down)
-            if (dx != 0f || dy != 0f) {
+            if (dx != 0.0 || dy != 0.0) {
                 val dpos = Point(dx, dy).normalized * speed
-                char.moveWithCollisions(collider, dpos.x, dpos.y)
+                char.moveWithCollisions(collider, dpos.x.toFloat(), dpos.y.toFloat())
             }
             char.animation = when {
                 dx < 0.0 -> "left"
@@ -134,7 +134,7 @@ class MainVampireScene : Scene() {
                 dy > 0.0 -> "down"
                 else -> char.animation
             }
-            if (dx != 0f || dy != 0f) {
+            if (dx != 0.0 || dy != 0.0) {
                 char.play()
             } else {
                 char.stop()

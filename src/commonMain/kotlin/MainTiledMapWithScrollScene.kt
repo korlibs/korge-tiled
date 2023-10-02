@@ -5,8 +5,8 @@ import korlibs.korge.input.*
 import korlibs.korge.scene.*
 import korlibs.korge.tiled.*
 import korlibs.korge.view.*
+import korlibs.math.*
 import korlibs.math.geom.*
-import korlibs.memory.*
 import korlibs.time.*
 import kotlin.math.*
 
@@ -19,8 +19,8 @@ class MainTiledMapWithScrollScene : Scene() {
                 tiledMapView(tiledMap) {
                 }
             }
-            var dx = 0f
-            var dy = 0f
+            var dx = 0.0
+            var dy = 0.0
             //this.keys.apply {
             //	down { key ->
             //		when (key) {
@@ -41,17 +41,17 @@ class MainTiledMapWithScrollScene : Scene() {
 
             addUpdater {
                 //val scale = 1.0 / (it / 16.666666.hrMilliseconds)
-                val scale: Float = if (it == 0.0.milliseconds) 0f else (it / 16.666666.milliseconds)
+                val scale: Double = if (it == 0.0.milliseconds) 0.0 else (it / 16.666666.milliseconds)
                 if (views.input.keys[Key.RIGHT]) dx -= 1f
                 if (views.input.keys[Key.LEFT]) dx += 1f
                 if (views.input.keys[Key.UP]) dy += 1f
                 if (views.input.keys[Key.DOWN]) dy -= 1f
-                dx = dx.clamp(-10f, +10f)
-                dy = dy.clamp(-10f, +10f)
+                dx = dx.clamp(-10.0, +10.0)
+                dy = dy.clamp(-10.0, +10.0)
                 camera.x += dx * scale
                 camera.y += dy * scale
-                dx *= 0.9f.pow(scale)
-                dy *= 0.9f.pow(scale)
+                dx *= 0.9.pow(scale)
+                dy *= 0.9.pow(scale)
             }
         }
     }

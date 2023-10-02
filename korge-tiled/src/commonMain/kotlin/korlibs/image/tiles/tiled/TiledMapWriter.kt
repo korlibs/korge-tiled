@@ -1,7 +1,6 @@
 package korlibs.image.tiles.tiled
 
 import korlibs.datastructure.*
-import korlibs.memory.toInt
 import korlibs.image.tiles.tiled.TiledMap.Encoding
 import korlibs.image.tiles.tiled.TiledMap.Image
 import korlibs.image.tiles.tiled.TiledMap.Layer
@@ -12,13 +11,13 @@ import korlibs.image.text.HorizontalAlign
 import korlibs.image.text.VerticalAlign
 import korlibs.image.tiles.TileMapObjectAlignment
 import korlibs.io.file.VfsFile
-import korlibs.io.lang.format
 import korlibs.io.serialization.xml.Xml
 import korlibs.io.serialization.xml.XmlBuilder
 import korlibs.io.serialization.xml.buildXml
-import korlibs.io.util.niceStr
-import korlibs.math.annotations.*
+import korlibs.math.*
 import korlibs.math.geom.*
+import korlibs.number.*
+import korlibs.util.*
 
 suspend fun VfsFile.writeTiledMap(map: TiledMap) {
 	writeString(map.toXml().toString())
@@ -310,10 +309,10 @@ private fun XmlBuilder.objectLayerToXml(layer: Layer.Objects?) {
 				"gid" to obj.gid,
 				"name" to obj.name.takeIf { it.isNotEmpty() },
 				"type" to obj.type.takeIf { it.isNotEmpty() },
-				"x" to obj.bounds.x.takeIf { it != 0f },
-				"y" to obj.bounds.y.takeIf { it != 0f },
-				"width" to obj.bounds.width.takeIf { it != 0f },
-				"height" to obj.bounds.height.takeIf { it != 0f },
+				"x" to obj.bounds.x.takeIf { it != 0.0 },
+				"y" to obj.bounds.y.takeIf { it != 0.0 },
+				"width" to obj.bounds.width.takeIf { it != 0.0 },
+				"height" to obj.bounds.height.takeIf { it != 0.0 },
 				"rotation" to obj.rotation.takeIf { it != 0.0 },
 				"visible" to obj.visible.toInt().takeIf { it != 1 }
 				//TODO: support object template
