@@ -562,7 +562,7 @@ open class TileMapEx(
                         val nextIndex = (aindex + 1) % info.frames.size
                         animationElapsed[tileIndex] -= currentFrame.duration.milliseconds
                         animationIndex[tileIndex] = nextIndex
-                        tilesetTextures[tileIndex] = tileset.textures[info.frames[nextIndex].tileId]
+                        tilesetTextures[tileIndex] = tileset.textures[info.frames[nextIndex].tileId + 1]
                         contentVersion++
                     }
                 }
