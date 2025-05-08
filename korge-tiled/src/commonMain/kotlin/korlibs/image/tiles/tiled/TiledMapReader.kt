@@ -497,7 +497,7 @@ private fun Xml.parseTileLayer(infinite: Boolean): Layer.Tiles {
 					else -> invalidOp("Unknown compression '$compression'")
 				}
 				//TODO: read UIntArray
-				content.readIntArrayLE(0, count)
+                content.getS32ArrayLE(0, count)
 			}
 		}
 

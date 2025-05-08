@@ -10,9 +10,7 @@ import korlibs.image.tiles.*
 import korlibs.io.lang.invalidArgument
 import korlibs.logger.Logger
 import korlibs.math.geom.*
-import korlibs.math.geom.shape.Shape2D
-import korlibs.math.geom.shape.buildVectorPath
-import korlibs.math.geom.shape.toShape2dNew
+import korlibs.math.geom.shape.*
 import korlibs.math.geom.vector.VectorPath
 import korlibs.math.geom.vector.applyTransform
 
@@ -253,14 +251,14 @@ class TiledMap constructor(
                     rect(rect)
                 })
 
-                override fun toShape2d(): Shape2D = rect
+                override fun toShape2d(): Shape2D = rect.toShape2D()
             }
             data class Ellipse(val width: Double, val height: Double) : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {
                     ellipse(Point(0, 0), Size(width, height))
                 })
 
-                override fun toShape2d() = korlibs.math.geom.Ellipse(Point(width / 2, height / 2), Size(width / 2, height / 2))
+                override fun toShape2d() = korlibs.math.geom.Ellipse(Point(width / 2, height / 2), Size(width / 2, height / 2)).toShape2D()
             }
             object PPoint : Shape() {
                 override fun toVectorPath(): VectorPath = buildVectorPath(VectorPath(), fun VectorPath.() {

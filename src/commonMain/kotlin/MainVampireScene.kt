@@ -12,6 +12,7 @@ import korlibs.korge.view.*
 import korlibs.korge.view.animation.*
 import korlibs.korge.view.collision.*
 import korlibs.math.geom.*
+import korlibs.math.geom.shape.*
 import korlibs.math.geom.slice.*
 import korlibs.time.*
 
@@ -80,7 +81,7 @@ class MainVampireScene : Scene() {
             val character1 = imageDataView(characters["vampire"], "down") {
                 stop()
                 xy(200, 200)
-                hitShape2d = Rectangle.fromBounds(-8.0, -3.0, +8.0, +3.0)
+                hitShape2d = Rectangle.fromBounds(-8.0, -3.0, +8.0, +3.0).toShape2D()
             }
 
             val character2 = imageDataView(characters["vamp"], "down") {
