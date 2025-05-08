@@ -9,6 +9,7 @@ import korlibs.image.tiles.tiled.*
 import korlibs.io.async.*
 import korlibs.io.file.std.*
 import korlibs.memory.extract
+import korlibs.number.*
 import kotlin.test.*
 
 internal object DefaultViewport {
@@ -42,7 +43,7 @@ class TiledMapTest : ViewsForTesting() {
     fun testRenderInBounds() {
         val renderTilesCounter = views.stats.counter("renderedTiles")
         val tileset = TileSet(Bitmap32(32, 32, premultiplied = true).slice(), 32, 32)
-        val map = TileMap(Bitmap32(200, 200, premultiplied = true), tileset)
+        val map = TileMap(TileMapData(200, 200), tileset)
         views.stage += map
         views.frameUpdateAndRender()
         assertEquals(DefaultViewport.WIDTH, views.actualVirtualWidth)
@@ -81,9 +82,9 @@ class TiledMapTest : ViewsForTesting() {
                 TileSetTileInfo(2, Bitmap32(32, 32, Colors.BLUE.premultiplied).slice())
             ), 32, 32
         )
-        val tileMap = TileMap(Bitmap32(32, 32, premultiplied = true), tileSet)
-        tileMap.stackedIntMap[0, 0, 0] = 0
-        tileMap.stackedIntMap[1, 0, 0] = 1
+        val tileMap = TileMap(TileMapData(32, 32), tileSet)
+        tileMap.map.data[0, 0, 0] = Int53(0.0)
+        tileMap.map.data[1, 0, 0] = Int53(1.0)
         tileMap.render(views.renderContext)
     }
 
